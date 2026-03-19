@@ -41,6 +41,31 @@ def inject_theme() -> None:
                 linear-gradient(180deg, #041018 0%, #071923 100%);
             color: var(--text);
         }
+        [data-testid="stHeader"] {
+            background: transparent;
+            height: 0;
+        }
+        [data-testid="stToolbar"] {
+            right: 1rem;
+            top: 0.75rem;
+        }
+        [data-testid="stDecoration"] {
+            display: none;
+        }
+        [data-testid="stStatusWidget"] {
+            display: none;
+        }
+        [data-testid="stSidebarNav"] {
+            padding-top: 1rem;
+        }
+        [data-testid="stSidebarNav"] > div:first-child {
+            display: none;
+        }
+        .block-container {
+            padding-top: 1.25rem !important;
+            padding-bottom: 2rem !important;
+            max-width: 1480px !important;
+        }
         [data-testid="stSidebar"] {
             background: linear-gradient(180deg, rgba(7, 22, 30, 0.98), rgba(8, 27, 38, 0.98));
             border-right: 1px solid var(--line);
@@ -57,6 +82,17 @@ def inject_theme() -> None:
         }
         .panel-card {
             padding: 1.15rem 1.2rem;
+        }
+        [data-testid="stJson"] > div,
+        [data-testid="stCodeBlock"] > div,
+        .stDataFrame {
+            border-radius: 18px;
+            overflow: hidden;
+        }
+        [data-testid="stJson"] pre,
+        [data-testid="stCodeBlock"] pre {
+            background: rgba(7, 18, 27, 0.96) !important;
+            color: var(--text) !important;
         }
         .flow-card, .stat-card {
             padding: 0.95rem 1rem;
