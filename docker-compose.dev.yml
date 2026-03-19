@@ -1,0 +1,22 @@
+services:
+  sdl-ui:
+    build: .
+    command: streamlit run app/frontend/streamlit_app.py --server.address=0.0.0.0 --server.port=8501 --server.headless=true
+    ports:
+      - "8501:8501"
+    volumes:
+      - .:/app
+    environment:
+      SDL_DB_PATH: /app/outputs/sdl_lab.db
+      SDL_REPORT_DIR: /app/outputs
+
+  sdl-api:
+    build: .
+    command: uvicorn app.backend.api.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      SDL_DB_PATH: /app/outputs/sdl_lab.db
+      SDL_REPORT_DIR: /app/outputs

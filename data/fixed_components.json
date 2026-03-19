@@ -1,0 +1,8 @@
+{
+  "primary_api_ratio": 20.0,
+  "primary_solvent": "Aqueous-organic carrier",
+  "buffer_system": "Phosphate-citrate",
+  "preservative": "0.1% benzyl alcohol",
+  "notes": "Fixed components are held constant in optimization campaigns and recorded with each run."
+}
+
