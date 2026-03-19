@@ -21,7 +21,6 @@
 本地直接运行前端演示：
 
 ```bash
-cd /Users/yuwen/work/ai-self-driving-drug-lab
 source .venv/bin/activate
 streamlit run app/frontend/streamlit_app.py
 ```
@@ -33,9 +32,8 @@ streamlit run app/frontend/streamlit_app.py
 如果只想跑一轮 CLI 闭环：
 
 ```bash
-cd /Users/yuwen/work/ai-self-driving-drug-lab
 source .venv/bin/activate
-PYTHONPATH=/Users/yuwen/work/ai-self-driving-drug-lab python scripts/run_demo_loop.py
+PYTHONPATH=. python scripts/run_demo_loop.py
 ```
 
 ## 仓库交付物
@@ -82,7 +80,7 @@ PYTHONPATH=/Users/yuwen/work/ai-self-driving-drug-lab python scripts/run_demo_lo
 
 ## 参数空间
 
-固定配料保存在 [data/fixed_components.json](/Users/yuwen/work/ai-self-driving-drug-lab/data/fixed_components.json)。
+固定配料保存在 [data/fixed_components.json](data/fixed_components.json)。
 
 优化变量 `X`：
 
@@ -127,7 +125,6 @@ PYTHONPATH=/Users/yuwen/work/ai-self-driving-drug-lab python scripts/run_demo_lo
 当前本机最稳妥的方式是使用 `python3.12` 并复用已安装站点包：
 
 ```bash
-cd /Users/yuwen/work/ai-self-driving-drug-lab
 python3.12 -m venv --system-site-packages .venv
 source .venv/bin/activate
 python --version
@@ -136,7 +133,6 @@ python --version
 ### 2. 运行 Streamlit MVP
 
 ```bash
-cd /Users/yuwen/work/ai-self-driving-drug-lab
 source .venv/bin/activate
 streamlit run app/frontend/streamlit_app.py
 ```
@@ -144,17 +140,15 @@ streamlit run app/frontend/streamlit_app.py
 ### 3. 运行 CLI 闭环 demo
 
 ```bash
-cd /Users/yuwen/work/ai-self-driving-drug-lab
 source .venv/bin/activate
-PYTHONPATH=/Users/yuwen/work/ai-self-driving-drug-lab python scripts/run_demo_loop.py
+PYTHONPATH=. python scripts/run_demo_loop.py
 ```
 
 ### 4. 启用 API
 
 ```bash
-cd /Users/yuwen/work/ai-self-driving-drug-lab
 source .venv/bin/activate
-PYTHONPATH=/Users/yuwen/work/ai-self-driving-drug-lab \
+PYTHONPATH=. \
 uvicorn app.backend.api.main:app --reload
 ```
 
@@ -185,9 +179,9 @@ docker compose -f docker-compose.dev.yml up --build
 
 说明：
 
-- [docker-compose.yml](/Users/yuwen/work/ai-self-driving-drug-lab/docker-compose.yml) 是生产态配置，不再把源码目录直接挂进容器
+- [docker-compose.yml](docker-compose.yml) 是生产态配置，不再把源码目录直接挂进容器
 - 生产态使用命名卷 `sdl_outputs` 持久化 `SQLite` 数据库和报告文件
-- [docker-compose.dev.yml](/Users/yuwen/work/ai-self-driving-drug-lab/docker-compose.dev.yml) 保留源码挂载与 API `--reload`，仅用于本地开发
+- [docker-compose.dev.yml](docker-compose.dev.yml) 保留源码挂载与 API `--reload`，仅用于本地开发
 
 ## 上线建议
 
@@ -215,7 +209,6 @@ docker compose up -d --build
 ## 验证
 
 ```bash
-cd /Users/yuwen/work/ai-self-driving-drug-lab
 python3 -m unittest discover -s tests -v
 ```
 
@@ -223,4 +216,4 @@ python3 -m unittest discover -s tests -v
 
 如果你需要一份给项目所有者自己看的演示讲稿和页面解释，见：
 
-- [docs/DEMO_GUIDE.md](/Users/yuwen/work/ai-self-driving-drug-lab/docs/DEMO_GUIDE.md)
+- [docs/DEMO_GUIDE.md](docs/DEMO_GUIDE.md)

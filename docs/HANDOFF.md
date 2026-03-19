@@ -71,7 +71,6 @@
 ### 本地
 
 ```bash
-cd /Users/yuwen/work/ai-self-driving-drug-lab
 source .venv/bin/activate
 streamlit run app/frontend/streamlit_app.py
 ```
