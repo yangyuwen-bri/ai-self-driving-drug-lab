@@ -10,6 +10,7 @@ from app.frontend.shared_ui import (
     inject_theme,
     render_card,
     render_metric_box,
+    render_svg_line_chart,
     set_last_summary,
     summary_to_rounds_dataframe,
 )
@@ -103,9 +104,21 @@ def main() -> None:
     else:
         chart_cols = st.columns([1.2, 1], gap="large")
         with chart_cols[0]:
-            st.line_chart(rounds_df.set_index("round")[["half_life", "stability_index", "solubility"]], height=320)
+            render_svg_line_chart(
+                "实验结果轨迹",
+                rounds_df.set_index("round")[["half_life", "stability_index", "solubility"]],
+                ["half_life", "stability_index", "solubility"],
+                colors=["#7ae7ff", "#7effb2", "#ffd36f"],
+                height=320,
+            )
         with chart_cols[1]:
-            st.line_chart(rounds_df.set_index("round")[["target_error", "desirability"]], height=320)
+            render_svg_line_chart(
+                "误差与评分",
+                rounds_df.set_index("round")[["target_error", "desirability"]],
+                ["target_error", "desirability"],
+                colors=["#ff9478", "#7ae7ff"],
+                height=320,
+            )
 
         st.dataframe(
             rounds_df[

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import html
 import pandas as pd
 import streamlit as st
 
@@ -209,6 +210,116 @@ def render_metric_box(label: str, value: str) -> None:
         """,
         unsafe_allow_html=True,
     )
+
+
+def render_svg_line_chart(
+    title: str,
+    dataframe: pd.DataFrame,
+    columns: list[str],
+    colors: list[str] | None = None,
+    height: int = 280,
+) -> None:
+    if dataframe.empty or not columns:
+        st.info("暂无图表数据。")
+        return
+
+    chart_df = dataframe[columns].astype(float)
+    width = 720
+    padding_left = 46
+    padding_right = 18
+    padding_top = 20
+    padding_bottom = 34
+    inner_width = width - padding_left - padding_right
+    inner_height = height - padding_top - padding_bottom
+
+    x_values = list(range(len(chart_df.index)))
+    all_values = [float(value) for column in columns for value in chart_df[column].tolist()]
+    min_y = min(all_values)
+    max_y = max(all_values)
+    if min_y == max_y:
+        min_y -= 1.0
+        max_y += 1.0
+
+    if colors is None:
+        colors = ["#7ae7ff", "#7effb2", "#ffd36f", "#ff9478"]
+
+    def x_coord(position: int) -> float:
+        if len(x_values) == 1:
+            return padding_left + inner_width / 2
+        return padding_left + inner_width * position / max(len(x_values) - 1, 1)
+
+    def y_coord(value: float) -> float:
+        ratio = (value - min_y) / (max_y - min_y)
+        return padding_top + inner_height * (1.0 - ratio)
+
+    line_markup: list[str] = []
+    legend_markup: list[str] = []
+    for index, column in enumerate(columns):
+        color = colors[index % len(colors)]
+        points = " ".join(
+            f"{x_coord(position):.1f},{y_coord(float(value)):.1f}"
+            for position, value in enumerate(chart_df[column].tolist())
+        )
+        line_markup.append(
+            f'<polyline fill="none" stroke="{color}" stroke-width="3" stroke-linecap="round" '
+            f'stroke-linejoin="round" points="{points}" />'
+        )
+        for position, value in enumerate(chart_df[column].tolist()):
+            line_markup.append(
+                f'<circle cx="{x_coord(position):.1f}" cy="{y_coord(float(value)):.1f}" r="3.5" fill="{color}" />'
+            )
+        legend_markup.append(
+            f'<span style="display:inline-flex;align-items:center;margin-right:14px;color:#eff8fb;font-size:13px;">'
+            f'<span style="width:10px;height:10px;border-radius:999px;background:{color};display:inline-block;margin-right:6px;"></span>'
+            f'{html.escape(column)}</span>'
+        )
+
+    x_axis = (
+        f'<line x1="{padding_left}" y1="{padding_top + inner_height}" '
+        f'x2="{padding_left + inner_width}" y2="{padding_top + inner_height}" '
+        f'stroke="rgba(255,255,255,0.18)" stroke-width="1" />'
+    )
+    y_axis = (
+        f'<line x1="{padding_left}" y1="{padding_top}" x2="{padding_left}" '
+        f'y2="{padding_top + inner_height}" stroke="rgba(255,255,255,0.18)" stroke-width="1" />'
+    )
+
+    tick_markup: list[str] = []
+    for position in range(len(x_values)):
+        x = x_coord(position)
+        tick_markup.append(
+            f'<text x="{x:.1f}" y="{padding_top + inner_height + 22}" text-anchor="middle" '
+            f'fill="#95b3be" font-size="12">{position + 1}</text>'
+        )
+
+    y_labels = [min_y, (min_y + max_y) / 2, max_y]
+    for label in y_labels:
+        y = y_coord(label)
+        tick_markup.append(
+            f'<line x1="{padding_left}" y1="{y:.1f}" x2="{padding_left + inner_width}" y2="{y:.1f}" '
+            f'stroke="rgba(255,255,255,0.08)" stroke-width="1" />'
+        )
+        tick_markup.append(
+            f'<text x="{padding_left - 8}" y="{y + 4:.1f}" text-anchor="end" '
+            f'fill="#95b3be" font-size="12">{label:.2f}</text>'
+        )
+
+    svg = f"""
+    <div style="background:linear-gradient(180deg, rgba(9,24,34,0.84), rgba(9,24,34,0.96));
+                border:1px solid rgba(106,227,255,0.18); border-radius:18px; padding:14px 14px 8px 14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div style="color:#eff8fb;font-size:16px;font-weight:700;">{html.escape(title)}</div>
+        <div>{"".join(legend_markup)}</div>
+      </div>
+      <svg viewBox="0 0 {width} {height}" width="100%" height="{height}" preserveAspectRatio="none">
+        {x_axis}
+        {y_axis}
+        {''.join(tick_markup)}
+        {''.join(line_markup)}
+      </svg>
+    </div>
+    """
+    st.markdown(svg, unsafe_allow_html=True)
 
 
 def default_request() -> SDLRequest:
