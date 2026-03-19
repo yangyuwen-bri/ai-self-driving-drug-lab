@@ -192,8 +192,7 @@ docker compose -f docker-compose.dev.yml up --build
 
 - 服务类型：`Web Service`
 - Runtime：`Docker`
-- 计划：`Starter`
-- 持久化磁盘挂载路径：`/app/outputs`
+- 计划：`Free`
 - 健康检查路径：`/_stcore/health`
 
 关键环境变量已写入 `render.yaml`：
@@ -204,7 +203,8 @@ docker compose -f docker-compose.dev.yml up --build
 
 说明：
 
-- Render 默认文件系统是临时的，因此需要磁盘来保留 `SQLite` 和报告文件
+- 当前仓库默认按 Render Free 配置，适合偶尔演示和临时预热后展示
+- Render Free 不保留运行期写入的数据，因此 `SQLite` 和报告文件不保证长期保存
 - 当前 demo 推荐只部署 Streamlit 这一套服务，不单独拆 API 服务
 
 ## 上线建议

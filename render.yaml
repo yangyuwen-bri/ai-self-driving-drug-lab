@@ -2,7 +2,7 @@ services:
   - type: web
     name: ai-self-driving-drug-lab
     runtime: docker
-    plan: starter
+    plan: free
     region: singapore
     dockerfilePath: ./Dockerfile
     healthCheckPath: /_stcore/health
@@ -13,7 +13,3 @@ services:
         value: /app/outputs/sdl_lab.db
       - key: SDL_REPORT_DIR
         value: /app/outputs
-    disk:
-      name: sdl-outputs
-      mountPath: /app/outputs
-      sizeGB: 1
