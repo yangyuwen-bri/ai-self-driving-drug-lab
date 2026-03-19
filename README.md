@@ -44,6 +44,7 @@ PYTHONPATH=. python scripts/run_demo_loop.py
 - 模拟实验执行层：`app/backend/simulation/`
 - SQLite 数据与报告输出：`outputs/`
 - Docker 部署配置：`Dockerfile`、`docker-compose.yml`
+- Render 部署配置：`render.yaml`
 - 演示讲稿：`docs/DEMO_GUIDE.md`
 - 接手说明：`docs/HANDOFF.md`
 
@@ -182,6 +183,29 @@ docker compose -f docker-compose.dev.yml up --build
 - [docker-compose.yml](docker-compose.yml) 是生产态配置，不再把源码目录直接挂进容器
 - 生产态使用命名卷 `sdl_outputs` 持久化 `SQLite` 数据库和报告文件
 - [docker-compose.dev.yml](docker-compose.dev.yml) 保留源码挂载与 API `--reload`，仅用于本地开发
+
+## Render 部署
+
+仓库已包含 [render.yaml](render.yaml)，可以直接作为 Render Blueprint 导入。
+
+推荐部署方式：
+
+- 服务类型：`Web Service`
+- Runtime：`Docker`
+- 计划：`Starter`
+- 持久化磁盘挂载路径：`/app/outputs`
+- 健康检查路径：`/_stcore/health`
+
+关键环境变量已写入 `render.yaml`：
+
+- `PORT=10000`
+- `SDL_DB_PATH=/app/outputs/sdl_lab.db`
+- `SDL_REPORT_DIR=/app/outputs`
+
+说明：
+
+- Render 默认文件系统是临时的，因此需要磁盘来保留 `SQLite` 和报告文件
+- 当前 demo 推荐只部署 Streamlit 这一套服务，不单独拆 API 服务
 
 ## 上线建议
 
