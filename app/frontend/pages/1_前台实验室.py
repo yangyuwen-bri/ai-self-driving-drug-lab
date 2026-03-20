@@ -8,7 +8,6 @@ from app.frontend.shared_ui import (
     get_last_summary,
     get_service,
     inject_theme,
-    render_card,
     render_metric_box,
     render_svg_line_chart,
     set_last_summary,
@@ -35,47 +34,39 @@ def main() -> None:
         <div class="hero-card">
             <div class="eyebrow">Front Lab</div>
             <h1 class="hero-title">前台实验室</h1>
-            <p class="hero-copy">设定目标，自动生成配方，执行虚拟实验。</p>
-            <span class="chip">输入目标 Y</span>
-            <span class="chip">系统生成 X</span>
-            <span class="chip">自动跑虚拟实验</span>
+            <p class="hero-copy">输入目标半衰期，系统自动推荐实验处方并完成一轮虚拟闭环优化。</p>
+            <div class="hero-actions">
+                <span class="chip">目标 Y</span>
+                <span class="chip">最佳处方 X</span>
+                <span class="chip">实验结果 Y</span>
+            </div>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    flow_col_1, flow_col_2, flow_col_3, flow_col_4 = st.columns(4)
-    with flow_col_1:
-        render_card("1. 设定目标 Y", "例如目标半衰期 12 小时，并设置允许误差和最大轮次。")
-    with flow_col_2:
-        render_card("2. 生成实验处方 X", "BayBE 根据已有数据推荐温度、湿度、辅料比例和工艺参数。")
-    with flow_col_3:
-        render_card("3. 执行虚拟实验", "数字孪生模拟器返回本轮实验观测值 Y，模拟未来真实实验输出。")
-    with flow_col_4:
-        render_card("4. 自动闭环优化", "系统根据误差继续调参，直到结果接近目标 Y。")
-
     left, right = st.columns([1.05, 1], gap="large")
     with left:
         st.markdown('<div class="panel-card">', unsafe_allow_html=True)
-        st.markdown("#### 当前任务看板")
+        st.markdown("#### 当前任务")
         if summary is None:
             st.info("还没有运行结果。请在左侧设置目标并点击“启动虚拟实验闭环”。")
         else:
             metric_cols = st.columns(3)
             with metric_cols[0]:
-                render_metric_box("Run ID", summary.run_id)
+                render_metric_box("目标值", f"{request.desired_half_life:.1f} h")
             with metric_cols[1]:
-                render_metric_box("状态", summary.status)
+                render_metric_box("最佳 half_life", f"{summary.best_result.half_life:.2f} h")
             with metric_cols[2]:
-                render_metric_box("策略", summary.strategy_used)
+                render_metric_box("目标误差", f"{summary.best_result.target_error:.3f}")
 
             metric_cols = st.columns(3)
             with metric_cols[0]:
-                render_metric_box("最佳 half_life", f"{summary.best_result.half_life:.2f} h")
-            with metric_cols[1]:
-                render_metric_box("目标误差", f"{summary.best_result.target_error:.3f}")
-            with metric_cols[2]:
                 render_metric_box("实验轮次", str(len(summary.rounds)))
+            with metric_cols[1]:
+                render_metric_box("运行状态", summary.status)
+            with metric_cols[2]:
+                render_metric_box("优化策略", summary.strategy_used)
 
             st.markdown("##### 推荐的最佳实验处方 X")
             st.json(summary.best_parameters.model_dump())
@@ -86,15 +77,11 @@ def main() -> None:
 
     with right:
         st.markdown('<div class="panel-card">', unsafe_allow_html=True)
-        st.markdown("#### 运行状态")
-        st.json(
-            {
-                "mode": "simulation-first",
-                "optimizer": request.strategy,
-                "target_mode": request.target_mode,
-                "tolerance": request.tolerance,
-            }
-        )
+        st.markdown("#### 本次设置")
+        render_metric_box("允许误差", f"{request.tolerance:.2f}")
+        render_metric_box("任务模式", request.target_mode)
+        render_metric_box("优化引擎", request.strategy)
+        st.markdown('<p class="muted-copy">更多参数已折叠到左侧“高级设置”，前台页只保留演示所需的核心信息。</p>', unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown('<div class="panel-card">', unsafe_allow_html=True)
@@ -102,21 +89,21 @@ def main() -> None:
     if rounds_df.empty:
         st.info("运行完成后，这里会显示每轮实验的收敛过程。")
     else:
-        chart_cols = st.columns([1.2, 1], gap="large")
+        chart_cols = st.columns(2, gap="large")
         with chart_cols[0]:
             render_svg_line_chart(
-                "实验结果轨迹",
-                rounds_df.set_index("round")[["half_life", "stability_index", "solubility"]],
-                ["half_life", "stability_index", "solubility"],
-                colors=["#7ae7ff", "#7effb2", "#ffd36f"],
+                "half_life 收敛轨迹",
+                rounds_df.set_index("round")[["half_life"]],
+                ["half_life"],
+                colors=["#7ae7ff"],
                 height=320,
             )
         with chart_cols[1]:
             render_svg_line_chart(
-                "误差与评分",
-                rounds_df.set_index("round")[["target_error", "desirability"]],
-                ["target_error", "desirability"],
-                colors=["#ff9478", "#7ae7ff"],
+                "目标误差",
+                rounds_df.set_index("round")[["target_error"]],
+                ["target_error"],
+                colors=["#ff9478"],
                 height=320,
             )
 
@@ -133,15 +120,12 @@ def main() -> None:
                     "pH",
                     "solvent_concentration",
                     "half_life",
-                    "stability_index",
-                    "solubility",
                     "target_error",
-                    "desirability",
                     "is_best",
                 ]
             ],
             use_container_width=True,
-            height=320,
+            height=280,
         )
     st.markdown("</div>", unsafe_allow_html=True)
 

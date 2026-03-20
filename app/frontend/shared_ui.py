@@ -70,6 +70,21 @@ def inject_theme() -> None:
             background: linear-gradient(180deg, rgba(7, 22, 30, 0.98), rgba(8, 27, 38, 0.98));
             border-right: 1px solid var(--line);
         }
+        [data-testid="stSidebarNav"] a {
+            color: rgba(239, 248, 251, 0.72);
+        }
+        [data-testid="stSidebarNav"] a:hover,
+        [data-testid="stSidebarNav"] a[aria-current="page"] {
+            color: var(--text);
+            background: rgba(122, 231, 255, 0.08);
+        }
+        [data-testid="stSidebar"] label,
+        [data-testid="stSidebar"] .stMarkdown,
+        [data-testid="stSidebar"] .stCaption,
+        [data-testid="stSidebar"] p,
+        [data-testid="stSidebar"] span {
+            color: var(--text);
+        }
         .hero-card, .panel-card, .flow-card, .stat-card {
             background: linear-gradient(180deg, var(--panel), var(--panel-strong));
             border: 1px solid var(--line);
@@ -77,7 +92,7 @@ def inject_theme() -> None:
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
         }
         .hero-card {
-            padding: 1.5rem 1.6rem;
+            padding: 1.5rem 1.6rem 1.3rem 1.6rem;
             margin-bottom: 1rem;
         }
         .panel-card {
@@ -113,7 +128,16 @@ def inject_theme() -> None:
         .hero-copy {
             color: var(--muted);
             margin: 0.65rem 0 1rem 0;
-            max-width: 60rem;
+            max-width: 44rem;
+        }
+        .hero-actions {
+            display: flex;
+            gap: 0.7rem;
+            flex-wrap: wrap;
+            margin-top: 0.95rem;
+        }
+        .hero-actions.tight {
+            margin-top: 0.8rem;
         }
         .chip {
             display: inline-block;
@@ -156,6 +180,42 @@ def inject_theme() -> None:
             margin: 0;
             color: var(--muted);
             font-size: 0.92rem;
+        }
+        .muted-copy {
+            color: var(--muted);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+        .nav-card {
+            background: linear-gradient(180deg, rgba(9, 24, 34, 0.84), rgba(9, 24, 34, 0.96));
+            border: 1px solid rgba(106, 227, 255, 0.18);
+            border-radius: 22px;
+            padding: 1.15rem 1.15rem 1rem 1.15rem;
+            min-height: 180px;
+        }
+        .nav-title {
+            margin: 0 0 0.45rem 0;
+            color: var(--text);
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        .nav-copy {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.98rem;
+            line-height: 1.6;
+        }
+        div[data-testid="stButton"] > button {
+            border-radius: 999px;
+            border: 1px solid rgba(106, 227, 255, 0.22);
+            background: rgba(122, 231, 255, 0.08);
+            color: var(--text);
+            font-weight: 700;
+            min-height: 2.75rem;
+        }
+        div[data-testid="stButton"] > button:hover {
+            border-color: rgba(122, 231, 255, 0.42);
+            color: var(--text);
         }
         </style>
         """,
@@ -379,14 +439,15 @@ def build_front_lab_sidebar() -> tuple[SDLRequest, bool]:
         st.markdown("### 前台实验任务")
         desired_half_life = st.slider("目标半衰期 Y（小时）", 4.0, 24.0, 12.0, 0.1)
         tolerance = st.slider("允许误差", 0.1, 2.0, 0.5, 0.05)
-        max_rounds = st.slider("最大实验轮次", 3, 20, 8)
-        initial_random_samples = st.slider("冷启动探索轮次", 3, 12, 6)
-        target_mode = st.radio("任务模式", ["multi", "single"], index=0, horizontal=True)
-        strategy = st.selectbox("优化引擎", ["baybe", "surrogate"])
-        st.markdown("### 多目标权重")
-        half_life_weight = st.slider("half_life", 0.0, 1.0, 0.6, 0.05)
-        stability_weight = st.slider("stability", 0.0, 1.0, 0.3, 0.05)
-        solubility_weight = st.slider("solubility", 0.0, 1.0, 0.1, 0.05)
+        with st.expander("高级设置"):
+            max_rounds = st.slider("最大实验轮次", 3, 20, 8)
+            initial_random_samples = st.slider("冷启动探索轮次", 3, 12, 6)
+            target_mode = st.radio("任务模式", ["multi", "single"], index=0, horizontal=True)
+            strategy = st.selectbox("优化引擎", ["baybe", "surrogate"])
+            st.markdown("#### 多目标权重")
+            half_life_weight = st.slider("half_life", 0.0, 1.0, 0.6, 0.05)
+            stability_weight = st.slider("stability", 0.0, 1.0, 0.3, 0.05)
+            solubility_weight = st.slider("solubility", 0.0, 1.0, 0.1, 0.05)
         execute = st.button("启动虚拟实验闭环", use_container_width=True, type="primary")
         st.caption("模式：Simulation")
 
