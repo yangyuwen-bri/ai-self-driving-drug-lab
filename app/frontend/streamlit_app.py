@@ -7,7 +7,9 @@ from app.frontend.shared_ui import (
     get_last_summary,
     get_store,
     inject_theme,
+    render_status_banner,
     render_metric_box,
+    render_page_head,
 )
 
 
@@ -20,23 +22,13 @@ def main() -> None:
     runs = store.list_runs()
     latest_summary = get_last_summary()
 
-    st.markdown(
-        f"""
-        <div class="hero-card">
-            <div class="eyebrow">Virtual Self-Driving Drug Lab</div>
-            <h1 class="hero-title">虚拟实验室演示总览</h1>
-            <p class="hero-copy">这是一个可运行的虚拟实验室 demo，用来演示目标驱动的闭环实验优化流程，并为后续真实实验接入做准备。</p>
-            <div class="hero-actions tight">
-                <span class="chip">虚拟闭环实验</span>
-                <span class="chip">BayBE 优化</span>
-                <span class="chip">真实接入预留</span>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
+    render_page_head(
+        "虚拟实验室总览",
+        "一个用于展示目标驱动闭环实验流程的虚拟实验室。前台负责执行，后台负责复盘。",
+        tags=["Simulation-first", "Closed Loop"],
     )
 
-    action_cols = st.columns([1, 1, 1.45], gap="large")
+    action_cols = st.columns([1, 1, 0.9], gap="large")
     with action_cols[0]:
         if st.button("进入前台实验室", use_container_width=True, type="primary"):
             st.switch_page("pages/1_前台实验室.py")
@@ -44,48 +36,24 @@ def main() -> None:
         if st.button("查看后台观测室", use_container_width=True):
             st.switch_page("pages/2_后台观测室.py")
     with action_cols[2]:
-        st.markdown('<p class="muted-copy">先在前台设定目标并运行一轮虚拟实验，再去后台查看 run 历史、误差收敛和最佳结果。</p>', unsafe_allow_html=True)
+        if st.button("查看接入路线", use_container_width=True):
+            st.switch_page("pages/3_接入路线.py")
 
-    st.markdown("#### 模块入口")
-    nav_cols = st.columns(3, gap="large")
-    with nav_cols[0]:
-        st.markdown(
-            """
-            <div class="nav-card">
-                <div class="nav-title">前台实验室</div>
-                <p class="nav-copy">输入目标半衰期，自动生成实验处方，并执行一轮虚拟闭环实验。</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-    with nav_cols[1]:
-        st.markdown(
-            """
-            <div class="nav-card">
-                <div class="nav-title">后台观测室</div>
-                <p class="nav-copy">查看 run 历史、每轮误差变化、最佳结果和关键收敛轨迹。</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-    with nav_cols[2]:
-        st.markdown(
-            """
-            <div class="nav-card">
-                <div class="nav-title">接入路线</div>
-                <p class="nav-copy">说明后续如何接入真实实验设备、实测数据回流和系统接口。</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+    render_status_banner(
+        "使用路径",
+        "先在前台设定目标并运行一轮虚拟实验，再到后台查看 run 历史、误差收敛和关键结果。",
+        tone="default",
+    )
 
-    st.markdown("#### 当前 demo 状态")
-    cols = st.columns(3)
+    st.markdown("#### 当前状态")
+    cols = st.columns(4)
     with cols[0]:
         render_metric_box("累计 runs", str(len(runs)))
     with cols[1]:
         render_metric_box("当前模式", "Simulation")
     with cols[2]:
+        render_metric_box("默认策略", "BayBE")
+    with cols[3]:
         render_metric_box("最近 run", "-" if latest_summary is None else latest_summary.run_id)
 
 

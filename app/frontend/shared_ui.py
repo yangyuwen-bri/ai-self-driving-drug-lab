@@ -5,7 +5,7 @@ import pandas as pd
 import streamlit as st
 
 from app.backend.core.config import load_fixed_components
-from app.backend.models.schemas import ExperimentParameters, ExperimentRecord, SDLRequest, SDLRunSummary
+from app.backend.models.schemas import ExperimentParameters, ExperimentRecord, ExperimentResult, ObjectiveWeights, SDLRunSummary
 from app.backend.services.sdl_service import SDLService
 from app.backend.storage.sqlite_store import SQLiteExperimentStore
 
@@ -109,6 +109,31 @@ def inject_theme() -> None:
             background: rgba(7, 18, 27, 0.96) !important;
             color: var(--text) !important;
         }
+        [data-baseweb="select"] > div {
+            background: rgba(7, 18, 27, 0.96) !important;
+            border-color: rgba(106, 227, 255, 0.18) !important;
+            color: var(--text) !important;
+        }
+        [data-baseweb="select"] * {
+            color: var(--text) !important;
+            fill: var(--text) !important;
+        }
+        div[role="listbox"] {
+            background: rgba(7, 18, 27, 0.98) !important;
+            border: 1px solid rgba(106, 227, 255, 0.18) !important;
+        }
+        div[role="option"] {
+            background: transparent !important;
+            color: var(--text) !important;
+        }
+        div[role="option"][aria-selected="true"] {
+            background: rgba(122, 231, 255, 0.12) !important;
+        }
+        [data-testid="stAlert"] {
+            background: rgba(12, 42, 67, 0.62) !important;
+            border: 1px solid rgba(106, 227, 255, 0.16) !important;
+            color: var(--text) !important;
+        }
         .flow-card, .stat-card {
             padding: 0.95rem 1rem;
         }
@@ -205,6 +230,194 @@ def inject_theme() -> None:
             font-size: 0.98rem;
             line-height: 1.6;
         }
+        .control-card {
+            background: linear-gradient(180deg, rgba(9, 24, 34, 0.9), rgba(9, 24, 34, 0.98));
+            border: 1px solid rgba(106, 227, 255, 0.18);
+            border-radius: 22px;
+            padding: 1.15rem 1.15rem 1rem 1.15rem;
+            margin-bottom: 1rem;
+        }
+        .page-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1.25rem;
+            padding: 1rem 0 0.85rem 0;
+            margin-bottom: 0.4rem;
+            border-bottom: 1px solid rgba(106, 227, 255, 0.12);
+        }
+        .page-head h1 {
+            margin: 0.12rem 0 0 0;
+            font-size: 2rem;
+            line-height: 1.05;
+            color: var(--text);
+        }
+        .page-head-copy {
+            margin: 0.42rem 0 0 0;
+            max-width: 42rem;
+            color: var(--muted);
+            font-size: 0.98rem;
+            line-height: 1.55;
+        }
+        .page-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.55rem;
+            justify-content: flex-end;
+        }
+        .page-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.42rem 0.78rem;
+            border-radius: 999px;
+            border: 1px solid rgba(106, 227, 255, 0.18);
+            background: rgba(122, 231, 255, 0.06);
+            color: var(--text);
+            font-size: 0.84rem;
+        }
+        .status-banner {
+            padding: 0.95rem 1rem;
+            border-radius: 18px;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(106, 227, 255, 0.18);
+            background: rgba(122, 231, 255, 0.08);
+        }
+        .status-banner.success {
+            border-color: rgba(126, 255, 178, 0.28);
+            background: rgba(126, 255, 178, 0.09);
+        }
+        .status-banner.warn {
+            border-color: rgba(255, 211, 111, 0.28);
+            background: rgba(255, 211, 111, 0.09);
+        }
+        .status-title {
+            margin: 0 0 0.2rem 0;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .status-copy {
+            margin: 0;
+            color: var(--text);
+            font-size: 0.98rem;
+            line-height: 1.5;
+        }
+        .section-title {
+            margin: 0 0 0.8rem 0;
+            font-size: 1.35rem;
+            color: var(--text);
+        }
+        .section-copy {
+            margin: -0.2rem 0 1rem 0;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+        .console-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.9rem;
+        }
+        .console-title {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--text);
+        }
+        .console-copy {
+            margin: 0.35rem 0 0 0;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+        .console-meta {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        .data-block {
+            background: linear-gradient(180deg, rgba(6, 16, 24, 0.88), rgba(7, 18, 27, 0.96));
+            border: 1px solid rgba(106, 227, 255, 0.14);
+            border-radius: 20px;
+            padding: 1rem 1rem 0.2rem 1rem;
+            height: 100%;
+        }
+        .stack-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        .run-card, .round-card {
+            background: linear-gradient(180deg, rgba(8, 19, 28, 0.96), rgba(7, 18, 27, 0.98));
+            border: 1px solid rgba(106, 227, 255, 0.14);
+            border-radius: 18px;
+            padding: 0.95rem 1rem;
+        }
+        .run-card.selected, .round-card.selected {
+            border-color: rgba(122, 231, 255, 0.34);
+            box-shadow: 0 0 0 1px rgba(122, 231, 255, 0.12) inset;
+        }
+        .row-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.55rem;
+        }
+        .row-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text);
+            word-break: break-word;
+        }
+        .row-copy {
+            margin: 0.2rem 0 0 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+            line-height: 1.45;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.24rem 0.52rem;
+            border-radius: 999px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            border: 1px solid rgba(106, 227, 255, 0.16);
+            color: var(--text);
+            background: rgba(122, 231, 255, 0.08);
+            white-space: nowrap;
+        }
+        .badge.success {
+            border-color: rgba(126, 255, 178, 0.24);
+            background: rgba(126, 255, 178, 0.10);
+        }
+        .badge.warn {
+            border-color: rgba(255, 211, 111, 0.24);
+            background: rgba(255, 211, 111, 0.10);
+        }
+        .mini-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.65rem 0.85rem;
+            margin-top: 0.75rem;
+        }
+        .mini-grid.three {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+        .mini-item-label {
+            color: var(--muted);
+            font-size: 0.74rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.18rem;
+        }
+        .mini-item-value {
+            color: var(--text);
+            font-size: 0.98rem;
+            font-weight: 700;
+            word-break: break-word;
+        }
         div[data-testid="stButton"] > button {
             border-radius: 999px;
             border: 1px solid rgba(106, 227, 255, 0.22);
@@ -216,6 +429,23 @@ def inject_theme() -> None:
         div[data-testid="stButton"] > button:hover {
             border-color: rgba(122, 231, 255, 0.42);
             color: var(--text);
+        }
+        details[data-testid="stExpander"] {
+            border: 1px solid rgba(106, 227, 255, 0.18);
+            border-radius: 18px;
+            background: rgba(122, 231, 255, 0.04);
+        }
+        details[data-testid="stExpander"] summary {
+            color: var(--text) !important;
+        }
+        details[data-testid="stExpander"] summary p,
+        details[data-testid="stExpander"] summary span,
+        details[data-testid="stExpander"] summary svg {
+            color: var(--text) !important;
+            fill: var(--text) !important;
+        }
+        div[data-testid="stSlider"] {
+            padding-top: 0.2rem;
         }
         </style>
         """,
@@ -306,6 +536,245 @@ def render_metric_box(label: str, value: str) -> None:
         """,
         unsafe_allow_html=True,
     )
+
+
+def render_status_banner(title: str, body: str, tone: str = "default") -> None:
+    tone_class = {
+        "success": "success",
+        "warn": "warn",
+    }.get(tone, "")
+    st.markdown(
+        f"""
+        <div class="status-banner {tone_class}">
+            <div class="status-title">{html.escape(title)}</div>
+            <p class="status-copy">{html.escape(body)}</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_page_head(title: str, body: str, tags: list[str] | None = None) -> None:
+    tags_markup = ""
+    if tags:
+        tags_markup = "".join(f'<span class="page-tag">{html.escape(tag)}</span>' for tag in tags)
+    st.markdown(
+        f"""
+        <div class="page-head">
+            <div>
+                <div class="eyebrow">Virtual Self-Driving Drug Lab</div>
+                <h1>{html.escape(title)}</h1>
+                <p class="page-head-copy">{html.escape(body)}</p>
+            </div>
+            <div class="page-meta">{tags_markup}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_metric_grid(items: list[tuple[str, str]], columns: int = 3) -> None:
+    if not items:
+        return
+    for start in range(0, len(items), columns):
+        cols = st.columns(columns)
+        chunk = items[start : start + columns]
+        for index, col in enumerate(cols):
+            if index >= len(chunk):
+                continue
+            with col:
+                render_metric_box(chunk[index][0], chunk[index][1])
+
+
+def humanize_strategy(strategy: str) -> str:
+    return strategy.replace("_", " ").replace("->", " -> ").strip()
+
+
+def summarize_strategy(strategy: str) -> str:
+    normalized = strategy.replace(" ", "")
+    mapping = {
+        "baybe_random->baybe_botorch": "BayBE 随机探索 -> BoTorch",
+        "random_bootstrap->surrogate_random_forest": "随机探索 -> 随机森林",
+        "surrogate_random_forest": "随机森林代理",
+        "baybe": "BayBE",
+        "surrogate": "随机森林代理",
+    }
+    return mapping.get(normalized, humanize_strategy(strategy))
+
+
+def count_completed_runs(runs_df: pd.DataFrame) -> int:
+    if runs_df.empty or "status" not in runs_df.columns:
+        return 0
+    return int((runs_df["status"].astype(str) == "completed").sum())
+
+
+def render_run_cards(runs_df: pd.DataFrame, selected_run_id: str | None, limit: int = 6) -> None:
+    if runs_df.empty:
+        st.info("暂无历史 runs。")
+        return
+    rows = list(runs_df.head(limit).iterrows())
+    for start in range(0, len(rows), 2):
+        cols = st.columns(2, gap="large")
+        chunk = rows[start : start + 2]
+        for col, (_, row) in zip(cols, chunk):
+            status = str(row["status"])
+            badge_class = "success" if status == "completed" else "warn"
+            is_selected = selected_run_id == str(row["run_id"])
+            selected_class = " selected" if is_selected else ""
+            target_mode = str(row["target_mode"]) if "target_mode" in runs_df.columns else "legacy"
+            finished_at = str(row["finished_at"])[:19] if "finished_at" in runs_df.columns else "-"
+            strategy = summarize_strategy(str(row["strategy_used"]))
+            with col:
+                st.markdown(
+                    f"""
+                    <div class="run-card{selected_class}">
+                        <div class="row-top">
+                            <div class="row-title">{html.escape(str(row["run_id"]))}</div>
+                            <span class="badge {badge_class}">{html.escape(status)}</span>
+                        </div>
+                        <p class="row-copy">目标 {float(row["desired_half_life"]):.1f} h · 容差 {float(row["tolerance"]):.2f}</p>
+                        <div class="mini-grid">
+                            <div><div class="mini-item-label">策略路径</div><div class="mini-item-value">{html.escape(strategy)}</div></div>
+                            <div><div class="mini-item-label">Current View</div><div class="mini-item-value">{"当前诊断对象" if is_selected else "历史记录"}</div></div>
+                            <div><div class="mini-item-label">Finished</div><div class="mini-item-value">{html.escape(finished_at)}</div></div>
+                            <div><div class="mini-item-label">Run Mode</div><div class="mini-item-value">{html.escape(target_mode)}</div></div>
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+    if len(runs_df) > limit:
+        st.markdown(f'<p class="muted-copy">当前显示最近 {limit} 条 run。完整选择列表保留在左侧。</p>', unsafe_allow_html=True)
+
+
+def render_round_cards(records_df: pd.DataFrame) -> None:
+    if records_df.empty:
+        st.info("暂无轮次明细。")
+        return
+    best_error_index = records_df["target_error"].astype(float).idxmin()
+    rows = list(records_df.iterrows())
+    for start in range(0, len(rows), 2):
+        cols = st.columns(2, gap="large")
+        chunk = rows[start : start + 2]
+        for col, (row_index, row) in zip(cols, chunk):
+            badge_class = "success" if row_index == best_error_index else ""
+            selected_class = " selected" if row_index == best_error_index else ""
+            with col:
+                st.markdown(
+                    f"""
+                    <div class="round-card{selected_class}">
+                        <div class="row-top">
+                            <div class="row-title">第 {int(row["round"])} 轮</div>
+                            <span class="badge {badge_class}">{"最佳轮次" if row_index == best_error_index else "轮次记录"}</span>
+                        </div>
+                        <p class="row-copy">{html.escape(str(row["created_at"]))[:19]}</p>
+                        <div class="mini-grid three">
+                            <div><div class="mini-item-label">half_life</div><div class="mini-item-value">{float(row["half_life"]):.2f} h</div></div>
+                            <div><div class="mini-item-label">target error</div><div class="mini-item-value">{float(row["target_error"]):.3f}</div></div>
+                            <div><div class="mini-item-label">desirability</div><div class="mini-item-value">{float(row["desirability"]):.3f}</div></div>
+                            <div><div class="mini-item-label">stability</div><div class="mini-item-value">{float(row["stability_index"]):.2f}</div></div>
+                            <div><div class="mini-item-label">solubility</div><div class="mini-item-value">{float(row["solubility"]):.2f}</div></div>
+                            <div><div class="mini-item-label">yield</div><div class="mini-item-value">{float(row["yield_percent"]):.1f}%</div></div>
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+
+def parameter_display_items(parameters: ExperimentParameters) -> list[tuple[str, str]]:
+    return [
+        ("温度", f"{parameters.temperature:.1f} °C"),
+        ("湿度", f"{parameters.humidity:.1f} %"),
+        ("辅料 A 比", f"{parameters.aux1_ratio:.2f}"),
+        ("辅料 B 比", f"{parameters.aux2_ratio:.2f}"),
+        ("时长", f"{parameters.duration:.1f} min"),
+        ("搅拌速度", f"{parameters.stirring_speed:.0f} rpm"),
+        ("pH", f"{parameters.pH:.2f}"),
+        ("溶剂浓度", f"{parameters.solvent_concentration:.1f} %"),
+    ]
+
+
+def result_display_items(result: ExperimentResult) -> list[tuple[str, str]]:
+    return [
+        ("half_life", f"{result.half_life:.2f} h"),
+        ("目标误差", f"{result.target_error:.3f}"),
+        ("稳定性", f"{result.stability_index:.2f}"),
+        ("溶解度", f"{result.solubility:.2f}"),
+        ("溶出速率", f"{result.dissolution_rate:.3f}"),
+        ("收率", f"{result.yield_percent:.1f} %"),
+        ("综合评分", f"{result.desirability:.3f}"),
+        ("数据来源", "虚拟实验" if result.source == "simulation" else "真实实验"),
+    ]
+
+
+def build_front_lab_request_inputs(strategy: str, target_mode: str) -> tuple[float, float, bool]:
+    st.markdown('<div class="control-card">', unsafe_allow_html=True)
+    st.markdown(
+        f"""
+        <div class="console-top">
+            <div>
+                <div class="eyebrow">Front Lab Console</div>
+                <h2 class="console-title">实验发起台</h2>
+                <p class="console-copy">设置本次实验目标并启动执行。历史轨迹和诊断统一放在后台观测室。</p>
+            </div>
+            <div class="console-meta">
+                <span class="page-tag">Simulation</span>
+                <span class="page-tag">{html.escape(strategy)}</span>
+                <span class="page-tag">{html.escape(target_mode)}</span>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    control_cols = st.columns([1.2, 1, 1], gap="large")
+    with control_cols[0]:
+        desired_half_life = st.slider("目标半衰期 Y（小时）", 4.0, 24.0, 12.0, 0.1)
+    with control_cols[1]:
+        tolerance = st.slider("允许误差", 0.1, 2.0, 0.5, 0.05)
+    with control_cols[2]:
+        st.markdown('<div style="height: 1.6rem;"></div>', unsafe_allow_html=True)
+        execute = st.button("启动虚拟实验", use_container_width=True, type="primary")
+    with st.expander("高级实验设置（可选）", expanded=False):
+        settings_cols = st.columns(2, gap="large")
+        with settings_cols[0]:
+            max_rounds = st.slider("最大实验轮次", 3, 20, 8)
+            initial_random_samples = st.slider("冷启动探索轮次", 3, 12, 6)
+            target_mode = st.radio("任务模式", ["multi", "single"], index=0 if target_mode == "multi" else 1, horizontal=True)
+            strategy = st.selectbox("优化引擎", ["baybe", "surrogate"], index=0 if strategy == "baybe" else 1)
+        with settings_cols[1]:
+            st.markdown("#### 多目标权重")
+            half_life_weight = st.slider("half_life", 0.0, 1.0, 0.6, 0.05)
+            stability_weight = st.slider("stability", 0.0, 1.0, 0.3, 0.05)
+            solubility_weight = st.slider("solubility", 0.0, 1.0, 0.1, 0.05)
+    st.markdown("</div>", unsafe_allow_html=True)
+    st.session_state["front_lab_advanced"] = {
+        "max_rounds": max_rounds,
+        "initial_random_samples": initial_random_samples,
+        "target_mode": target_mode,
+        "strategy": strategy,
+        "weights": ObjectiveWeights(
+            half_life=half_life_weight,
+            stability_index=stability_weight,
+            solubility=solubility_weight,
+        ),
+    }
+    return desired_half_life, tolerance, execute
+
+
+def get_front_lab_advanced_settings() -> dict:
+    default = {
+        "max_rounds": 8,
+        "initial_random_samples": 6,
+        "target_mode": "multi",
+        "strategy": "baybe",
+        "weights": ObjectiveWeights(
+            half_life=0.6,
+            stability_index=0.3,
+            solubility=0.1,
+        ),
+    }
+    return st.session_state.get("front_lab_advanced", default)
 
 
 def render_svg_line_chart(
@@ -416,55 +885,6 @@ def render_svg_line_chart(
     </div>
     """
     st.markdown(svg, unsafe_allow_html=True)
-
-
-def default_request() -> SDLRequest:
-    return SDLRequest(
-        desired_half_life=12.0,
-        tolerance=0.5,
-        max_rounds=8,
-        initial_random_samples=6,
-        target_mode="multi",
-        strategy="baybe",
-        weights={
-            "half_life": 0.6,
-            "stability_index": 0.3,
-            "solubility": 0.1,
-        },
-    )
-
-
-def build_front_lab_sidebar() -> tuple[SDLRequest, bool]:
-    with st.sidebar:
-        st.markdown("### 前台实验任务")
-        desired_half_life = st.slider("目标半衰期 Y（小时）", 4.0, 24.0, 12.0, 0.1)
-        tolerance = st.slider("允许误差", 0.1, 2.0, 0.5, 0.05)
-        with st.expander("高级设置"):
-            max_rounds = st.slider("最大实验轮次", 3, 20, 8)
-            initial_random_samples = st.slider("冷启动探索轮次", 3, 12, 6)
-            target_mode = st.radio("任务模式", ["multi", "single"], index=0, horizontal=True)
-            strategy = st.selectbox("优化引擎", ["baybe", "surrogate"])
-            st.markdown("#### 多目标权重")
-            half_life_weight = st.slider("half_life", 0.0, 1.0, 0.6, 0.05)
-            stability_weight = st.slider("stability", 0.0, 1.0, 0.3, 0.05)
-            solubility_weight = st.slider("solubility", 0.0, 1.0, 0.1, 0.05)
-        execute = st.button("启动虚拟实验闭环", use_container_width=True, type="primary")
-        st.caption("模式：Simulation")
-
-    request = SDLRequest(
-        desired_half_life=desired_half_life,
-        tolerance=tolerance,
-        max_rounds=max_rounds,
-        initial_random_samples=initial_random_samples,
-        target_mode=target_mode,
-        strategy=strategy,
-        weights={
-            "half_life": half_life_weight,
-            "stability_index": stability_weight,
-            "solubility": solubility_weight,
-        },
-    )
-    return request, execute
 
 
 def integration_payload(summary: SDLRunSummary | None) -> dict:
