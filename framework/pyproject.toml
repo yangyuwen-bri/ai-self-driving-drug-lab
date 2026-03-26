@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "autoquant"
+version = "0.1.0"
+description = "A simulation-first framework for target-driven closed-loop quantitative optimization"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+baybe = ["baybe>=0.14"]
+
+[project.scripts]
+autoquant-drug-lab = "autoquant.examples.drug_lab.run_example:main"
+autoquant-coating-line = "autoquant.examples.coating_line.run_example:main"
+autoquant-coating-benchmark = "autoquant.examples.coating_line.benchmark_example:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
