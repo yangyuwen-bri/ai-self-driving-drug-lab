@@ -1,0 +1,17 @@
+{
+  "name": "coating_line_demo",
+  "parameters": [
+    {"name": "oven_temperature", "lower": 140.0, "upper": 240.0, "unit": "°C", "description": "oven zone temperature"},
+    {"name": "line_speed", "lower": 5.0, "upper": 25.0, "unit": "m/min", "description": "production line speed"},
+    {"name": "catalyst_ratio", "lower": 0.1, "upper": 1.5, "unit": "%", "description": "catalyst additive ratio"},
+    {"name": "dryer_flow", "lower": 20.0, "upper": 90.0, "unit": "%", "description": "dryer flow rate"},
+    {"name": "pressure", "lower": 1.0, "upper": 6.0, "unit": "bar", "description": "roller pressure"}
+  ],
+  "objectives": [
+    {"name": "coating_thickness", "mode": "match_bell", "target": 85.0, "weight": 0.6, "unit": "μm", "tolerance": 3.0, "metadata": {}},
+    {"name": "adhesion_index", "mode": "maximize", "target": null, "weight": 0.25, "unit": "score", "tolerance": null, "metadata": {"lower_bound": 50.0, "upper_bound": 100.0}},
+    {"name": "throughput", "mode": "maximize", "target": null, "weight": 0.15, "unit": "m²/h", "tolerance": null, "metadata": {"lower_bound": 20.0, "upper_bound": 120.0}}
+  ],
+  "fixed_components": {},
+  "constraints": []
+}

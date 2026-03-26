@@ -29,6 +29,18 @@ class BenchmarkTrialResult:
     best_error: float | None
     best_objective_score: float | None
 
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "planner_name": self.planner_name,
+            "replicate_index": self.replicate_index,
+            "campaign_id": self.campaign_id,
+            "status": self.status,
+            "rounds_run": self.rounds_run,
+            "best_round_index": self.best_round_index,
+            "best_error": self.best_error,
+            "best_objective_score": self.best_objective_score,
+        }
+
 
 @dataclass(slots=True)
 class BenchmarkPlannerSummary:
@@ -39,6 +51,16 @@ class BenchmarkPlannerSummary:
     avg_rounds_run: float
     avg_best_objective_score: float | None
 
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "planner_name": self.planner_name,
+            "trials_count": self.trials_count,
+            "success_rate": self.success_rate,
+            "avg_best_error": self.avg_best_error,
+            "avg_rounds_run": self.avg_rounds_run,
+            "avg_best_objective_score": self.avg_best_objective_score,
+        }
+
 
 @dataclass(slots=True)
 class BenchmarkReport:
@@ -48,6 +70,51 @@ class BenchmarkReport:
     replicates: int
     summaries: list[BenchmarkPlannerSummary]
     trials: list[BenchmarkTrialResult]
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "scenario_name": self.scenario_name,
+            "target": dict(self.target),
+            "tolerance": self.tolerance,
+            "replicates": self.replicates,
+            "summaries": [item.to_dict() for item in self.summaries],
+            "trials": [item.to_dict() for item in self.trials],
+        }
+
+    def to_markdown(self) -> str:
+        lines = [
+            f"# Benchmark Report: {self.scenario_name}",
+            "",
+            f"- Target: `{self.target}`",
+            f"- Tolerance: `{self.tolerance}`",
+            f"- Replicates: `{self.replicates}`",
+            "",
+            "## Planner Summaries",
+            "",
+            "| Planner | Trials | Success Rate | Avg Best Error | Avg Rounds | Avg Objective Score |",
+            "| --- | ---: | ---: | ---: | ---: | ---: |",
+        ]
+        for item in self.summaries:
+            score = "-" if item.avg_best_objective_score is None else f"{item.avg_best_objective_score:.4f}"
+            lines.append(
+                f"| {item.planner_name} | {item.trials_count} | {item.success_rate:.2%} | {item.avg_best_error:.4f} | {item.avg_rounds_run:.2f} | {score} |"
+            )
+        lines.extend(
+            [
+                "",
+                "## Trial Results",
+                "",
+                "| Planner | Replicate | Status | Rounds | Best Round | Best Error | Objective Score |",
+                "| --- | ---: | --- | ---: | ---: | ---: | ---: |",
+            ]
+        )
+        for item in self.trials:
+            best_error = "-" if item.best_error is None else f"{item.best_error:.4f}"
+            objective = "-" if item.best_objective_score is None else f"{item.best_objective_score:.4f}"
+            lines.append(
+                f"| {item.planner_name} | {item.replicate_index} | {item.status} | {item.rounds_run} | {item.best_round_index or '-'} | {best_error} | {objective} |"
+            )
+        return "\n".join(lines)
 
 
 def _clone_campaign(template: CampaignConfig, planner_name: str, replicate_index: int) -> CampaignConfig:

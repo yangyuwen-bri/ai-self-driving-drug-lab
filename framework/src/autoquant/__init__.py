@@ -8,5 +8,7 @@ __all__ = [
     "modeling",
     "orchestration",
     "planners",
+    "registry",
+    "scenarios",
     "storage",
 ]

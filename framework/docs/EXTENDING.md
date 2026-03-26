@@ -98,3 +98,30 @@ my_project/
 ```
 
 如果场景成熟，再把它做成 packaged example。
+
+## 配置化接入
+
+如果不想把场景写死在 Python 里，可以直接用：
+
+- `autoquant.scenarios.load_builtin_scenario()`
+- `autoquant.scenarios.load_scenario_file()`
+
+推荐做法是：
+
+1. 先用 JSON 场景文件定义参数和目标
+2. 再用 Python 实现 planner / simulator / feedback
+3. 最后把它注册到你自己的应用或 CLI
+
+## 注册内置组件
+
+框架还提供了基础 registry：
+
+- `build_planner_registry()`
+- `build_executor_registry()`
+- `build_feedback_registry()`
+
+这适合：
+
+- 做配置驱动应用
+- 按名称创建 planner
+- 在 UI 中展示“可选组件”

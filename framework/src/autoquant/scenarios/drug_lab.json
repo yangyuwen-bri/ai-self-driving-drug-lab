@@ -1,0 +1,23 @@
+{
+  "name": "drug_lab_demo",
+  "parameters": [
+    {"name": "temperature", "lower": 20.0, "upper": 80.0, "unit": "°C", "description": "reaction temperature"},
+    {"name": "humidity", "lower": 40.0, "upper": 80.0, "unit": "%", "description": "ambient humidity"},
+    {"name": "aux1_ratio", "lower": 0.5, "upper": 5.0, "unit": "%", "description": "surfactant ratio"},
+    {"name": "aux2_ratio", "lower": 0.0, "upper": 3.0, "unit": "%", "description": "stabilizer ratio"},
+    {"name": "duration", "lower": 60.0, "upper": 300.0, "unit": "min", "description": "reaction duration"},
+    {"name": "stirring_speed", "lower": 100.0, "upper": 1000.0, "unit": "rpm", "description": "stirring speed"},
+    {"name": "pH", "lower": 4.0, "upper": 9.0, "unit": "", "description": "solution pH"},
+    {"name": "solvent_concentration", "lower": 10.0, "upper": 50.0, "unit": "%", "description": "solvent concentration"}
+  ],
+  "objectives": [
+    {"name": "half_life", "mode": "match_bell", "target": 12.0, "weight": 0.6, "unit": "h", "tolerance": 0.5, "metadata": {}},
+    {"name": "stability_index", "mode": "maximize", "target": null, "weight": 0.3, "unit": "score", "tolerance": null, "metadata": {"lower_bound": 40.0, "upper_bound": 100.0}},
+    {"name": "solubility", "mode": "maximize", "target": null, "weight": 0.1, "unit": "mg/mL", "tolerance": null, "metadata": {"lower_bound": 2.0, "upper_bound": 35.0}}
+  ],
+  "fixed_components": {
+    "primary_api_ratio": 20.0,
+    "primary_solvent": "default-buffer"
+  },
+  "constraints": []
+}

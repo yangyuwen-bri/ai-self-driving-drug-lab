@@ -53,6 +53,19 @@
   - `drug_lab`
   - `coating_line`
 
+## 这轮新增的框架能力
+
+- built-in scenario loader
+  - `autoquant.scenarios.load_builtin_scenario("drug_lab")`
+  - `autoquant.scenarios.load_scenario_file("scenario.json")`
+- component registry
+  - `autoquant.registry.build_planner_registry()`
+  - `autoquant.registry.build_executor_registry()`
+  - `autoquant.registry.build_feedback_registry()`
+- benchmark report export
+  - `BenchmarkReport.to_dict()`
+  - `BenchmarkReport.to_markdown()`
+
 ## 安装
 
 进入 `framework/` 目录后执行：
@@ -128,6 +141,8 @@ autoquant-coating-benchmark --target-thickness 85 --replicates 3 --max-rounds 5
 - `autoquant.storage`
 - `autoquant.modeling`
 - `autoquant.benchmarking`
+- `autoquant.scenarios`
+- `autoquant.registry`
 
 扩展约定见：
 
@@ -180,6 +195,33 @@ orchestrator = SequentialOrchestrator(
 )
 
 history = orchestrator.run_campaign(scenario, campaign)
+```
+
+如果你希望从配置文件加载场景，而不是手写 Python：
+
+```python
+from autoquant.scenarios import load_builtin_scenario, load_scenario_file
+
+scenario = load_builtin_scenario("drug_lab")
+other_scenario = load_scenario_file("my_scenario.json")
+```
+
+如果你希望按名字创建内置 planner / executor / feedback：
+
+```python
+from autoquant.registry import (
+    build_executor_registry,
+    build_feedback_registry,
+    build_planner_registry,
+)
+
+planners = build_planner_registry()
+executors = build_executor_registry()
+feedback = build_feedback_registry()
+
+random_planner = planners.create("random", seed=7)
+noop_executor = executors.create("noop")
+synthetic_feedback = feedback.create("synthetic", measure_fn=my_measure_fn)
 ```
 
 ## Benchmarking

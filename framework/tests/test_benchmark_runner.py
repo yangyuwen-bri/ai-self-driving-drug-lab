@@ -54,6 +54,8 @@ class BenchmarkRunnerTest(unittest.TestCase):
         self.assertEqual(report.summaries[0].planner_name, "good")
         self.assertLess(report.summaries[0].avg_best_error, report.summaries[1].avg_best_error)
         self.assertEqual(len(report.trials), 4)
+        self.assertIn("summaries", report.to_dict())
+        self.assertIn("| Planner |", report.to_markdown())
 
 
 if __name__ == "__main__":
