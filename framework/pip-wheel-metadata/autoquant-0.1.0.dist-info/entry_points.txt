@@ -1,4 +1,0 @@
-[console_scripts]
-autoquant-coating-benchmark = autoquant.examples.coating_line.benchmark_example:main
-autoquant-coating-line = autoquant.examples.coating_line.run_example:main
-autoquant-drug-lab = autoquant.examples.drug_lab.run_example:main
